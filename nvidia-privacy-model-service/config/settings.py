@@ -3,7 +3,7 @@ import os
 # Default configuration values
 CONFIG = {
     "model_path": os.path.join(os.path.expanduser("~"), ".cache", "gliner"),
-    "model_download_url": "https://huggingface.co/nvidia/GliNER-PII",
+    "model_download_url": "nvidia/GliNER-PII",
     "threshold_default": 0.5,
     "max_batch_size": 100,
     "device": "auto"  # auto, cuda, cpu

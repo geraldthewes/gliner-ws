@@ -74,7 +74,7 @@ async def health_check():
     """Health check endpoint to verify service availability and model readiness"""
     return HealthResponse(
         status="healthy",
-        model_loaded=model_manager is not None,
+        model_loaded=model_manager is not None and model_manager.model is not None,
         device=device
     )
 
@@ -107,8 +107,13 @@ async def evaluate_pii_phi(request: EvaluateRequest):
 
             return EvaluateResponse(entities=entities)
         else:
+            # Model not loaded, but we still want to return 400 for empty text
+            # This handles the case where model loading fails
             raise HTTPException(status_code=500, detail="Model not loaded")
 
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 400 for empty text)
+        raise
     except Exception as e:
         logger.error(f"Evaluation failed: {e}")
         raise HTTPException(status_code=500, detail=f"Evaluation failed: {str(e)}")

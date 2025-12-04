@@ -13,7 +13,7 @@ class ModelManager:
         self.device = device
         self.model = None
         self._ensure_model_exists()
-        
+
     def _ensure_model_exists(self):
         """Ensure the model exists locally, downloading if necessary"""
         try:
@@ -22,36 +22,41 @@ class ModelManager:
                 self.model_download_url,
                 cache_dir=self.model_path
             )
-            
+
             # Set device
             if self.device == "auto":
                 self.device = "cuda" if torch.cuda.is_available() else "cpu"
             elif self.device == "cuda" and not torch.cuda.is_available():
                 logger.warning("CUDA not available, falling back to CPU")
                 self.device = "cpu"
-                
+
             self.model.to(self.device)
             logger.info(f"Model loaded successfully on {self.device}")
-            
+
         except Exception as e:
             logger.error(f"Failed to load model: {e}")
-            raise
-            
+            # Don't raise exception here, allow the service to continue
+            # but mark model as not loaded
+            self.model = None
+
     def predict(self, texts: list, labels: list = None, threshold: float = 0.5):
         """Run prediction on texts"""
         if not self.model:
             raise RuntimeError("Model not loaded")
-            
+
         try:
             # For batch processing, we'll need to handle it properly
             results = []
-            
-            # Simple implementation for now - in a real scenario, 
+
+            # Simple implementation for now - in a real scenario,
             # this would handle batching and more complex logic
             for text in texts:
-                predictions = self.model.predict(text, labels=labels, threshold=threshold)
+                # Using the correct method name and parameters
+                # For the mock implementation, we'll use a default set of labels
+                # In a real implementation, we'd pass the actual labels
+                predictions = self.model.predict_entities(text, labels=labels or [], threshold=threshold)
                 results.append(predictions)
-                
+
             return results
         except Exception as e:
             logger.error(f"Prediction failed: {e}")
