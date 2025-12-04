@@ -19,6 +19,15 @@ COPY . .
 # Create logs directory
 RUN mkdir -p logs
 
+# Define environment variables
+ENV MODEL_PATH=~/.cache/gliner
+ENV MODEL_DOWNLOAD_URL=nvidia/GliNER-PII
+ENV THRESHOLD_DEFAULT=0.5
+ENV MAX_BATCH_SIZE=100
+ENV DEVICE=auto
+ENV LOG_LEVEL=INFO
+ENV PORT=8000
+
 # Expose port
 EXPOSE 8000
 
